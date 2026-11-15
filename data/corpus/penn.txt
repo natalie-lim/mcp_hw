@@ -1,0 +1,4 @@
+The University of Pennsylvania is an Ivy League university in Philadelphia,
+founded in 1740. Its engineering school is the School of Engineering and
+Applied Science (SEAS). CIS 1990 is a minicourse on designing LLM agents,
+taught on Wednesday evenings.

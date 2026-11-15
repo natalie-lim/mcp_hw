@@ -1,0 +1,7 @@
+An LLM agent is a language model placed inside a loop and given tools to act on
+the world. The ReAct pattern interleaves reasoning and acting: the model emits a
+thought, chooses an action (a tool call), observes the result, and repeats until
+it can answer. Retrieval-augmented generation (RAG) gives an agent knowledge by
+retrieving relevant documents and adding them to the prompt. The Model Context
+Protocol (MCP) is a standard for exposing tools to any agent over a client and
+server.

@@ -1,0 +1,4 @@
+CIS 1990 grading is 45% assignments, 35% final project, and 20% participation.
+There are four homeworks: HW0 gets an LLM running, HW1 builds a first agent, HW2
+adds retrieval and memory, and HW3 exposes tools over MCP. The final project is
+done in groups of two and must be deployed.

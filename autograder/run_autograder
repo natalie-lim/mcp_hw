@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Runs on every submission. run_tests.py reads the student's files from
+# /autograder/submission and writes /autograder/results/results.json.
+cd /autograder/source
+python3 run_tests.py
