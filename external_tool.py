@@ -7,7 +7,7 @@ lets it answer general-knowledge questions by asking Wikipedia instead.
 The file has two functions:
 
     fetch_summary(title) -> dict       PROVIDED. Does all the networking.
-    wikipedia_summary(title) -> str    TODO. Turns that dict into clean text.
+    wikipedia_summary(title) -> str    Turns that dict into clean text.
 
 You do not need to know anything about HTTP or web scraping. `fetch_summary`
 already sends the request, waits for the reply, parses the JSON, and catches
@@ -82,7 +82,7 @@ def fetch_summary(title: str) -> dict:
 
 
 def wikipedia_summary(title: str) -> str:
-    """wikipedia_summary - TODO. Return a clean, readable Wikipedia summary.
+    """wikipedia_summary - Return a clean, readable Wikipedia summary.
 
     Parameters:
         title (str): An article title, such as "Alan Turing".
@@ -116,23 +116,33 @@ def wikipedia_summary(title: str) -> str:
               data.get("content_urls", {}).get("desktop", {}).get("page")
         - Build the result as a list of lines and finish with "\\n".join(lines).
     """
-    # TODO 1: if title is empty or only whitespace, return a message asking
-    #         for a title (and do not call fetch_summary).
+    if not title or not title.strip():
+        return "Please provide a Wikipedia article title."
 
-    # TODO 2: call fetch_summary(title) and store the dictionary.
+    data = fetch_summary(title)
 
-    # TODO 3: if the dictionary has an "error" key, return the matching
-    #         "not found" or "could not reach Wikipedia" message.
+    if "error" in data:
+        if data["error"] == "not_found":
+            return f"No Wikipedia page found for '{title}'."
+        return f"Could not reach Wikipedia for '{title}' ({data['error']})."
 
-    # TODO 4: if data.get("type") is "disambiguation", return a message that
-    #         says the title is ambiguous.
+    if data.get("type") == "disambiguation":
+        return (f"'{title}' is ambiguous on Wikipedia (it could mean several "
+                f"pages). Try a more specific title.")
 
-    # TODO 5: read "extract". If it is missing or empty, return a
-    #         "no summary available" message.
+    extract = data.get("extract")
+    if not extract:
+        return f"No summary available for '{title}'."
 
-    # TODO 6: read "title", "description", and the nested page URL, then
-    #         build and return the three-line summary.
-    raise NotImplementedError
+    page_title = data.get("title") or title
+    description = data.get("description")
+    url = data.get("content_urls", {}).get("desktop", {}).get("page")
+
+    lines = [f"{page_title} - {description}" if description else page_title,
+             extract]
+    if url:
+        lines.append(f"Source: {url}")
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":

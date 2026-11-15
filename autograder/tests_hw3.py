@@ -1,15 +1,15 @@
 """
 HW3 autograder. Fully offline: the network and the embedding API are mocked.
 
-  Part 1 (12 of 15 pts): external_tool.wikipedia_summary formats the dict
-      returned by the provided fetch_summary. urlopen is mocked.
-  Part 2 (40 of 70 pts): mcp_server registers search / retrieve /
+  Part 1: external_tool.wikipedia_summary is provided infrastructure and is
+      regression-tested offline. urlopen is mocked.
+  Part 2 (50 pts): mcp_server registers search / retrieve /
       wikipedia_summary with typed string args and non-placeholder
       descriptions, and each tool calls through to the provided function.
       Needs Python 3.10+ (the `mcp` package); auto-skips otherwise.
 
-Hand-graded: Part 1 writeup (3), Part 2 description quality, client output,
-and short answers (30), Part 3 writeup (15).
+Hand-graded: the five open-ended MCP and agent-design answers in writeup.md
+(50 points).
 """
 import asyncio
 import importlib
@@ -58,20 +58,20 @@ def _summary(title, payload=None, side_effect=None):
 
 
 class TestPart1ExternalTool(unittest.TestCase):
-    @weight(4)
+    @weight(0)
     def test_formats_title_and_extract(self):
         out, _ = _summary("Alan Turing", TURING)
         self.assertIsInstance(out, str)
         self.assertIn("Alan Turing", out)
         self.assertIn("Alan Mathison Turing was an English mathematician.", out)
 
-    @weight(1)
+    @weight(0)
     def test_includes_description_and_source(self):
         out, _ = _summary("Alan Turing", TURING)
         self.assertIn("English computer scientist", out)
         self.assertIn("Source: https://en.wikipedia.org/wiki/Alan_Turing", out)
 
-    @weight(1)
+    @weight(0)
     def test_optional_fields_missing(self):
         bare = {"type": "standard", "title": "Bare Page", "extract": "Just text."}
         out, _ = _summary("Bare Page", bare)
@@ -79,21 +79,21 @@ class TestPart1ExternalTool(unittest.TestCase):
         self.assertNotIn("None", out, "missing description/URL should be left out")
         self.assertNotIn("Source:", out)
 
-    @weight(2)
+    @weight(0)
     def test_handles_404(self):
         err = urllib.error.HTTPError("url", 404, "Not Found", {}, None)
         out, _ = _summary("Not A Real Page 99999", side_effect=err)
         self.assertIsInstance(out, str)
         self.assertIn("Not A Real Page 99999", out)
 
-    @weight(1)
+    @weight(0)
     def test_handles_network_error(self):
         out, _ = _summary("Alan Turing", side_effect=TimeoutError("timed out"))
         self.assertIsInstance(out, str)
         self.assertIn("Alan Turing", out)
         self.assertNotIn("Alan Mathison", out)
 
-    @weight(1)
+    @weight(0)
     def test_disambiguation(self):
         page = {"type": "disambiguation", "title": "Mercury",
                 "extract": "Mercury may refer to:"}
@@ -101,14 +101,14 @@ class TestPart1ExternalTool(unittest.TestCase):
         self.assertIn("ambiguous", out.lower())
         self.assertIn("Mercury", out)
 
-    @weight(1)
+    @weight(0)
     def test_missing_extract(self):
         out, _ = _summary("Empty Page", {"type": "standard", "title": "Empty Page"})
         self.assertIsInstance(out, str)
         self.assertIn("Empty Page", out)
         self.assertNotIn("None", out)
 
-    @weight(1)
+    @weight(0)
     def test_blank_title_skips_network(self):
         out, mocked = _summary("   ", TURING)
         self.assertIsInstance(out, str)
@@ -158,7 +158,7 @@ class TestPart2MCPServer(unittest.TestCase):
             self.assertIn(arg, schema.get("required", []),
                           f"'{name}.{arg}' must be required")
 
-    @weight(5)
+    @weight(15)
     def test_descriptions_written(self):
         for name in EXPECTED:
             self.assertIn(name, self.tools)
@@ -167,7 +167,7 @@ class TestPart2MCPServer(unittest.TestCase):
                                     f"'{name}' needs a real docstring description")
             self.assertNotIn("TODO", desc)
 
-    @weight(4)
+    @weight(3)
     def test_wikipedia_tool_calls_part1(self):
         with patch("urllib.request.urlopen", return_value=_fake_response(TURING)):
             out = _call_result_text(_run(self.server.mcp.call_tool(
@@ -180,7 +180,7 @@ class TestPart2MCPServer(unittest.TestCase):
             "search", {"query": "Comcast Technology Center"})))
         self.assertIn("1,121", out)
 
-    @weight(3)
+    @weight(4)
     def test_retrieve_tool_joins_chunks(self):
         retriever = sys.modules["retriever"]
         fake_index = [

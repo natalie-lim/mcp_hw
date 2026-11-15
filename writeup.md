@@ -1,67 +1,45 @@
 # HW3 Writeup
 
-Name: 
+Name:
 
-## Part 1: Wikipedia tool
+## 1. Protocol architecture: 10 points
 
-### Output
-
-Paste the output of `uv run python external_tool.py`.
-
-```
-
-```
-
-### Why return an error message?
-
-Explain in 2-4 sentences why your tool returns an error message instead of raising an exception when the caller is a model in an agent loop.
+Compare MCP with importing ordinary Python functions directly. Give at least
+two concrete advantages and one cost or limitation of MCP. Explain how the
+client/server boundary changes deployment, versioning, or testing.
 
 
-## Part 2: MCP server
+## 2. Tool and schema design: 10 points
 
-### 1. Client output
-
-Paste the full output of `uv run python mcp_client.py`.
-
-```
-
-```
-
-### 2. Tool choice
-
-For each demo question, state which tool the model chose and whether it was correct. Quote the phrase from your description that steered the choice. If the model chose wrong while you were working, say what you changed.
-
-**Question 1: How tall is the Comcast Technology Center?**
+Choose one tool from `mcp_server.py` and show the schema the client receives,
+including its name, argument, type, and description. Explain how a vague
+description can cause a silent wrong-tool failure. Propose one change that
+would make the schema safer or more precise.
 
 
-**Question 2: How does an agent decide between thinking and taking an action?**
+## 3. Reliable agent behavior: 10 points
+
+Design a strategy for an agent choosing among exact search, semantic
+retrieval, and an external API. Discuss ambiguity, missing results, malformed
+arguments, timeouts, retries, and when to try another tool. Distinguish tool
+errors from valid empty results.
 
 
-**Question 3: Who was Alan Turing?**
+## 4. Security and trust boundaries: 10 points
+
+Identify at least four security or privacy risks in an MCP-based agent.
+Include risks involving untrusted tool descriptions or results, prompt
+injection, overpowered tools, secrets, or cross-user data. For each, propose a
+concrete mitigation and explain what risk remains.
 
 
-### 3. Your own question
+## 5. Novel system design: 10 points
 
-Paste the output of `uv run python mcp_client.py "your question"` and explain in 2-4 sentences why the model chose that tool.
-
-```
-
-```
-
-
-### 4. Lifecycle
-
-In 4-6 sentences, explain what `mcp_client.py` does in steps 1-5. Include why the client can call your tools without importing `mcp_server.py`, and why the client is `async`.
+Design an MCP-based agent for a new domain. Specify at least three tools and
+their input/output contracts, which actions require confirmation, how stale
+or conflicting information is handled, how tool selection and final answers
+are evaluated, and one failure scenario with a recovery policy.
 
 
-## Part 3: Writeup
 
-### Why MCP over hardcoded functions
-
-Give two concrete advantages you experienced in this assignment.
-
-
-### A tool schema
-
-Show one schema you wrote. Explain what makes it good and what breaks downstream when a description is vague.
-
+How much time did you spend on this assignment?
