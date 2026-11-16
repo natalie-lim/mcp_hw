@@ -16,7 +16,7 @@ This assignment has two equally weighted parts:
 2. **Open-ended MCP and agent design (50 points):** reason about protocols,
    schemas, tool selection, reliability, security, and agent architecture.
 
-Wikipedia tools are iplemented for you and provided. Its implementation is complete, and
+The Wikipedia tool is implemented for you and provided. Its implementation is complete, and
 students are not expected to debug networking, API responses, or formatting.
 The only student code file is `mcp_server.py`; written answers go in
 `writeup.md`.

@@ -2,7 +2,8 @@
 Test runner. Works locally and on Gradescope.
 
 Local:     TARGET=../solution python run_tests.py
-Gradescope: run_autograder puts the submission on the path and calls this.
+Gradescope: run_autograder builds a grading folder (provided files + the
+            student's mcp_server.py), sets TARGET to it, and calls this.
 """
 import os
 import sys
@@ -18,7 +19,8 @@ suite = loader.loadTestsFromName("tests_hw3")
 
 try:
     from gradescope_utils.autograder_utils.json_test_runner import JSONTestRunner
-    with open("/autograder/results/results.json", "w") as f:
+    results = os.environ.get("RESULTS", "/autograder/results/results.json")
+    with open(results, "w") as f:
         JSONTestRunner(visibility="visible", stream=f).run(suite)
 except Exception:
     result = unittest.TextTestRunner(verbosity=2).run(suite)

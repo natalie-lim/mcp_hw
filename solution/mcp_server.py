@@ -1,4 +1,4 @@
-"""Reference solution. mcp_server.py - Part 2: expose three tools over MCP.
+"""Reference solution. mcp_server.py - Part 1: expose three tools over MCP.
 
 Run directly to serve over stdio:  python mcp_server.py
 The tool logic lives in retriever.py and external_tool.py; MCP just wraps it.
@@ -14,10 +14,12 @@ mcp = FastMCP("cis1990-hw3")
 
 @mcp.tool()
 def search(query: str) -> str:
-    """Exact keyword search over the local corpus (CIS 1990 course logistics,
-    LLM agents/RAG/MCP, Penn, Philadelphia, Paris). Use FIRST when the question
-    names a specific thing to match word-for-word: a building, course code,
-    number, or proper noun. Pass a few distinctive keywords, not a sentence."""
+    """Exact keyword search over the local corpus, which covers CIS 1990 course
+    logistics, LLM agents/RAG/MCP, Penn, Philadelphia (landmarks, buildings,
+    heights), and Paris. Prefer this over wikipedia_summary whenever the
+    question names a specific landmark, building, course code, number, or
+    proper noun in one of those topics. Pass a few distinctive keywords, not
+    a sentence."""
     return _keyword_search(query)
 
 
@@ -32,9 +34,11 @@ def retrieve(query: str) -> str:
 
 @mcp.tool()
 def wikipedia_summary(title: str) -> str:
-    """Live Wikipedia lookup for general knowledge NOT in the local corpus
-    (people, places, events, concepts). Pass an exact article title such as
-    "Alan Turing", not a question."""
+    """Live Wikipedia lookup for general knowledge the local corpus does not
+    cover (people, places, events, concepts). Do not use it for Penn,
+    Philadelphia, Paris, the course, or LLM agents; search the local corpus
+    for those first. Pass an exact article title such as "Alan Turing", not a
+    question."""
     return _wikipedia_summary(title)
 
 

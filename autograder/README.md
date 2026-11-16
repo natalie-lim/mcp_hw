@@ -14,11 +14,26 @@ from the five open-ended MCP and agent-design answers in `writeup.md`.
 The Gradescope image must be Python 3.10+ because the `mcp` package requires
 it. The tests auto-skip MCP checks on older Python versions.
 
-Package:
+Package (from the repo root):
 
 ```bash
-zip -r hw3-autograder.zip gs_shim.py tests_hw3.py run_tests.py setup.sh run_autograder
+bash autograder/make_zip.sh    # writes autograder/hw3-autograder.zip
 ```
+
+The zip contains the test harness plus a `provided/` folder with every file
+`mcp_server.py` imports (`retriever.py`, `external_tool.py`, `embeddings.py`,
+`llm.py`, `ingest.py`, `data/corpus/`). Students submit only `mcp_server.py`
+and `writeup.md`, so `run_autograder` builds a clean grading folder from
+`provided/` and copies in the student's `mcp_server.py`. Provided files that a
+student submits are ignored. Rebuild the zip whenever a provided file changes.
+
+Student starter (upload this to Canvas/Ed):
+
+```bash
+bash autograder/make_starter_zip.sh    # writes autograder/hw3-starter.zip
+```
+
+It contains only git-tracked files outside `solution/` and `autograder/`.
 
 Local:
 
@@ -31,9 +46,11 @@ TARGET=../solution python3 run_tests.py
 - Students edit only `mcp_server.py` and `writeup.md`. Everything else,
   including the completed Wikipedia demonstration, `mcp_client.py`, and the
   `keyword_search`/`retrieve` logic in `retriever.py`, is provided.
-- Reward good schema descriptions. A vague description is the primary cause
-  of wrong tool selection, and the client's model-routing step makes that
-  visible.
+- Descriptions (15 pts) are autograded by a sanity check only: at least 40
+  characters and no "TODO". This is deliberate; description quality is not
+  hand-graded. A vague description is still the main cause of wrong tool
+  selection, and the client's model-routing step makes that visible, so it is
+  worth pointing out in feedback.
 - Wikipedia is demonstration infrastructure, not a student implementation
   requirement. A real API may fail during the demo; that should not affect
   the MCP implementation score.

@@ -1,9 +1,9 @@
 """
 HW3 autograder. Fully offline: the network and the embedding API are mocked.
 
-  Part 1: external_tool.wikipedia_summary is provided infrastructure and is
-      regression-tested offline. urlopen is mocked.
-  Part 2 (50 pts): mcp_server registers search / retrieve /
+  Wikipedia (0 pts): external_tool.wikipedia_summary is provided
+      infrastructure and is regression-tested offline. urlopen is mocked.
+  Part 1 MCP (50 pts): mcp_server registers search / retrieve /
       wikipedia_summary with typed string args and non-placeholder
       descriptions, and each tool calls through to the provided function.
       Needs Python 3.10+ (the `mcp` package); auto-skips otherwise.
@@ -57,7 +57,7 @@ def _summary(title, payload=None, side_effect=None):
     return out, mocked
 
 
-class TestPart1ExternalTool(unittest.TestCase):
+class TestWikipediaRegression(unittest.TestCase):
     @weight(0)
     def test_formats_title_and_extract(self):
         out, _ = _summary("Alan Turing", TURING)
@@ -131,12 +131,15 @@ def _call_result_text(result):
 EXPECTED = {"search": "query", "retrieve": "query", "wikipedia_summary": "title"}
 
 
-class TestPart2MCPServer(unittest.TestCase):
+class TestMCPServer(unittest.TestCase):
     def setUp(self):
         try:
             self.server = _fresh("mcp_server")
         except ImportError as e:
-            if "mcp" in str(e):
+            # Skip only when the `mcp` package itself is missing (Python < 3.10).
+            # A missing or broken mcp_server.py must fail, not skip: "mcp" is
+            # also a substring of "No module named 'mcp_server'".
+            if e.name == "mcp" or (e.name or "").startswith("mcp."):
                 self.skipTest(f"`mcp` not importable in this environment: {e}")
             raise
         self.tools = {t.name: t for t in _run(self.server.mcp.list_tools())}
@@ -145,6 +148,9 @@ class TestPart2MCPServer(unittest.TestCase):
     def test_registers_three_tools(self):
         for name in EXPECTED:
             self.assertIn(name, self.tools, f"MCP server must register '{name}'")
+        extra = sorted(set(self.tools) - set(EXPECTED))
+        if extra:
+            self.fail(f"MCP server must register exactly three tools; remove {extra}")
 
     @weight(10)
     def test_typed_string_arguments(self):
@@ -168,7 +174,7 @@ class TestPart2MCPServer(unittest.TestCase):
             self.assertNotIn("TODO", desc)
 
     @weight(3)
-    def test_wikipedia_tool_calls_part1(self):
+    def test_wikipedia_tool_calls_through(self):
         with patch("urllib.request.urlopen", return_value=_fake_response(TURING)):
             out = _call_result_text(_run(self.server.mcp.call_tool(
                 "wikipedia_summary", {"title": "Alan Turing"})))

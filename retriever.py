@@ -7,7 +7,7 @@ corpus tools from HW2:
     keyword_search(query) -> str        # exact-word lookup over data/corpus/
     retrieve(query, k=4) -> list[str]   # top-k chunks by embedding similarity
 
-Both are plain Python functions. They know nothing about MCP. In Part 2 your
+Both are plain Python functions. They know nothing about MCP. In Part 1 your
 `mcp_server.py` imports them and wraps each one as an MCP tool. Keeping the
 logic here and the MCP wrapper there means you can test either function on
 its own:
