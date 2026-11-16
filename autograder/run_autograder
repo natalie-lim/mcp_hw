@@ -1,5 +1,24 @@
 #!/usr/bin/env bash
-# Runs on every submission. run_tests.py reads the student's files from
-# /autograder/submission and writes /autograder/results/results.json.
-cd /autograder/source
-python3 run_tests.py
+# Runs on every submission.
+#
+# Students submit only mcp_server.py and writeup.md, but mcp_server.py imports
+# the provided files (retriever.py, external_tool.py, ...). Build a clean
+# grading folder from the provided copies packed into the autograder zip, then
+# add the student's mcp_server.py. Any provided files a student submits are
+# ignored, so edited copies cannot change the result.
+set -u
+AG="${AUTOGRADER_ROOT:-/autograder}"
+WORK="$AG/work"
+
+rm -rf "$WORK"
+mkdir -p "$WORK" "$AG/results"
+cp -R "$AG/source/provided/." "$WORK/"
+
+# Accept mcp_server.py at the top level or inside a folder (e.g. a GitHub upload).
+SERVER="$(find "$AG/submission" -name mcp_server.py -not -path '*/.venv/*' | head -n 1)"
+if [ -n "$SERVER" ]; then
+    cp "$SERVER" "$WORK/mcp_server.py"
+fi
+
+cd "$AG/source"
+TARGET="$WORK" RESULTS="$AG/results/results.json" python3 run_tests.py

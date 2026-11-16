@@ -1,5 +1,5 @@
 """
-mcp_server.py - Part 2: expose your three tools over MCP.
+mcp_server.py - Part 1: expose three tools over MCP.
 
 An MCP server is a small program that advertises a list of tools. Any MCP
 client (our provided mcp_client.py, Claude Desktop, an IDE, another team's
@@ -54,7 +54,7 @@ mcp = FastMCP("cis1990-hw3")
 #       tool should return one string, so join them, e.g. with "\n\n".
 #
 #   wikipedia_summary(title: str) -> str
-#       Wrap _wikipedia_summary(title) from Part 1.
+#       Wrap _wikipedia_summary(title) from external_tool.py.
 #
 # Give each tool a docstring that tells the model:
 #   1. what information the tool can reach (local corpus vs. the internet),
